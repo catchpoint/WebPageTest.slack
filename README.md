@@ -83,7 +83,7 @@ $ npm start
 
 ![image](https://user-images.githubusercontent.com/31168643/118534667-1c585e80-b767-11eb-9cdd-f259e24aced8.png)
 
-
+### Note : - You can skip some steps accordingly if you already have a slack app or want to integrate in your current node project.
 
 
 	
