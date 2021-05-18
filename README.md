@@ -34,56 +34,56 @@ $ npm start
 
 * **Create a slack app for your workspace.**
 
-![image](https://user-images.githubusercontent.com/31168643/118532366-81f71b80-b764-11eb-87f0-3470169374fc.png)
+![image](https://user-images.githubusercontent.com/31168643/118680453-5e8fa780-b81c-11eb-89c9-0ac2f24129b1.png)
 
 
 * **Choose the app type as "From Scratch"**
 
-![image](https://user-images.githubusercontent.com/31168643/118532675-dac6b400-b764-11eb-988e-63fddadf79d4.png)
+![image](https://user-images.githubusercontent.com/31168643/118680814-ad3d4180-b81c-11eb-81d7-b93f47cc94d3.png)
 
 * **Once the slack app is created, go to features tab of the application added and add the following : -**
 
 	* **Bot User OAuth Token**
 
-![image](https://user-images.githubusercontent.com/31168643/118533215-70fada00-b765-11eb-95f5-55a542c2b9f8.png)
+![image](https://user-images.githubusercontent.com/31168643/118681458-38b6d280-b81d-11eb-9854-599be05c2900.png)
 	
 * **Scope To Bot Token**
 	
 
-![image](https://user-images.githubusercontent.com/31168643/118533359-9c7dc480-b765-11eb-9667-aedf21122502.png)
+![image](https://user-images.githubusercontent.com/31168643/118681682-66038080-b81d-11eb-9592-d3b9f4106e5c.png)
 	
 * **Slash Command, make sure to add api path of triggering slack URL modal. (https://ngrokUrl/api/slack/webpagetest)**
 
-![image](https://user-images.githubusercontent.com/31168643/118534207-99370880-b766-11eb-984a-c6d9424c2be9.png)
+![image](https://user-images.githubusercontent.com/31168643/118681835-86333f80-b81d-11eb-9d60-d03799795160.png)
 
-![image](https://user-images.githubusercontent.com/31168643/118534222-9d632600-b766-11eb-9342-21120d219e99.png)
+![image](https://user-images.githubusercontent.com/31168643/118682029-b24ec080-b81d-11eb-9545-c8d96014e84b.png)
 
 
 * **Next is adding a interactivity URL, any interactions with modals or interactive components are sent to this URL. Add the second APIs URL to post the message once response from WPT is fetched. (https://ngrokUrl/api/slack/interactions)**
 
-![image](https://user-images.githubusercontent.com/31168643/118534296-af44c900-b766-11eb-97ad-3c3821438579.png)
+![image](https://user-images.githubusercontent.com/31168643/118682126-c8f51780-b81d-11eb-8975-b397dd3f21f5.png)
 
 
 #### Note : - Once you have added the slash command and interactivity URL, you might be asked to reinstall your app, please do it to make changes applicable on your app.
 
-![image](https://user-images.githubusercontent.com/31168643/118534369-c7b4e380-b766-11eb-8f0b-fdfbf7611a54.png)
+![image](https://user-images.githubusercontent.com/31168643/118682199-da3e2400-b81d-11eb-93b1-66f0ac401cc0.png)
 
 
 #### 4. Run the command on slack
 * **Next step is to check our command on slack, start by typing webpagetest, you should see a recommendation of webpagetest as below.**
 
-![image](https://user-images.githubusercontent.com/31168643/118534505-f03cdd80-b766-11eb-8aef-7b6a5fa42c8b.png)
+![image](https://user-images.githubusercontent.com/31168643/118682354-fe016a00-b81d-11eb-9825-61a35a64a7dc.png)
 
 * **Above command should open a modal like below**
 
-![image](https://user-images.githubusercontent.com/31168643/118534606-0d71ac00-b767-11eb-9054-aaf8dedd0aa2.png)
+![image](https://user-images.githubusercontent.com/31168643/118682409-0b1e5900-b81e-11eb-8c4a-d178b57248a7.png)
 
 
 * **Enter the values as required and submit, once the request is submitted successfully, an example response like below is posted on the required channel**
 
-![image](https://user-images.githubusercontent.com/31168643/118534667-1c585e80-b767-11eb-9cdd-f259e24aced8.png)
+![image](https://user-images.githubusercontent.com/31168643/118682454-17a2b180-b81e-11eb-92fa-74b87c1d875d.png)
 
-### Note : - You can skip some steps accordingly if you already have a slack app or want to integrate in your current node project.
+#### Note : - You can skip some steps accordingly if you already have a slack app or want to integrate in your current node project.
 
 
 	
