@@ -4,7 +4,7 @@
 
 #### 1. Setting up a node-server.
 * Clone this repository.
-* Update the wpt-api-key and slack token in default.json of config.
+* Update the wpt_api_key, slack_token and channel_id in default.json of config.
 * Run "npm install" to install all dependencies.
 
 ```bash
