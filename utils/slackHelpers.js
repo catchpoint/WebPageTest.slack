@@ -1,141 +1,5 @@
-exports.runTest = (wpt, url, options) => {
-    // clone options object to avoid WPT wrapper issue
-    let tempOptions = JSON.parse(JSON.stringify(options));
+const connectivity = require('./connectivityOptions');
 
-    return new Promise((resolve, reject) => {
-        console.info(`Submitting test for ${url}...`);
-        wpt.runTest(url, tempOptions, async(err, result) => {
-            try {
-                if (result) {
-                    return resolve({'result':result,'err':err});
-                } else {
-                    return reject(err);
-                }
-            } catch (e) {
-                console.info(e);
-            }
-        })
-    });
-}
-
-exports.getLocations = (wpt,options) => {
-    // clone options object to avoid WPT wrapper issue
-    let tempOptions = JSON.parse(JSON.stringify(options));
-
-    return new Promise((resolve, reject) => {
-        console.info(`Getting Locations...`);
-        wpt.getLocations(tempOptions, async(err, result) => {
-            try {
-                if (result) {
-                    return resolve({'result':result,'err':err});
-                } else {
-                    return reject(err);
-                }
-            } catch (e) {
-                console.info(e);
-            }
-        })
-    });
-}
-
-const connectivityOptions = [
-    {
-      "text": {
-        "type": "plain_text",
-        "text": "DSL - 1.5 Mbps down, 384 Kbps up, 50 ms first-hop RTT",
-        "emoji": true
-      },
-      "value":  "DSL"
-    },
-    {
-      "text": {
-        "type": "plain_text",
-        "text": "Cable - 5 Mbps down, 1 Mbps up, 28ms first-hop RTT",
-        "emoji": true
-      },
-      "value":  "Cable"
-    },
-    {
-      "text": {
-        "type": "plain_text",
-        "text": "FIOS - 20 Mbps down, 5 Mbps up, 4 ms first-hop RTT",
-        "emoji": true
-      },
-      "value":  "FIOS"
-    },
-    {
-      "text": {
-        "type": "plain_text",
-        "text": "Dial - 49 Kbps down, 30 Kbps up, 120 ms first-hop RTT",
-        "emoji": true
-      },
-      "value":  "Dial"
-    },
-    {
-      "text": {
-        "type": "plain_text",
-        "text": "Edge - 240 Kbps down, 200 Kbps up, 840 ms first-hop RTT",
-        "emoji": true
-      },
-      "value":  "Edge"
-    },
-    {
-      "text": {
-        "type": "plain_text",
-        "text": "2G - 280 Kbps down, 256 Kbps up, 800 ms first-hop RTT",
-        "emoji": true
-      },
-      "value":  "2G"
-    },
-    {
-      "text": {
-        "type": "plain_text",
-        "text": "3GSlow - 400 Kbps down and up, 400 ms first-hop RTT",
-        "emoji": true
-      },
-      "value":  "3GSlow"
-    },
-    {
-      "text": {
-        "type": "plain_text",
-        "text": "3G - 1.6 Mbps down, 768 Kbps up, 300 ms first-hop RTT",
-        "emoji": true
-      },
-      "value":  "3G"
-    },
-    {
-      "text": {
-        "type": "plain_text",
-        "text": "3GFast - 1.6 Mbps down, 768 Kbps up, 150 ms first-hop RTT",
-        "emoji": true
-      },
-      "value":  "3GFast"
-    },
-    {
-      "text": {
-        "type": "plain_text",
-        "text": "4G - 9 Mbps down and up, 170 ms first-hop RTT",
-        "emoji": true
-      },
-      "value":  "4G"
-    },
-    {
-      "text": {
-        "type": "plain_text",
-        "text": "LTE - 12 Mbps down and up, 70 ms first-hop RTT",
-        "emoji": true
-      },
-      "value":  "LTE"
-    },
-    {
-      "text": {
-        "type": "plain_text",
-        "text": "Native - No synthetic traffic shaping applied",
-        "emoji": true
-      },
-      "value":  "Native"
-    }
-  ]
 const  generateLocationOptions = (allLocations)=>{
 
     let options = [];
@@ -154,7 +18,9 @@ const  generateLocationOptions = (allLocations)=>{
 
     return options;
 }
-exports.getDialogView = (allLocations) =>{
+
+
+exports.dialogView = (allLocations) =>{
 
     return {
         type: 'modal',
@@ -223,7 +89,7 @@ exports.getDialogView = (allLocations) =>{
                 text: "Select an item",
                 emoji: true
               },
-              options: connectivityOptions,
+              options: connectivity.connectivityOptions,
               action_id: "connectivity"
             },
             label: {
@@ -266,7 +132,60 @@ exports.getDialogView = (allLocations) =>{
       }
 }
 
-exports.getBlockResult = (url,summary,waterfallLink) =>{
+exports.testSubmissionBlock = (url) =>{
+
+    return [
+        {
+          "type": "divider"
+        },
+        {
+          "type": "section",
+          "text": {
+            "type": "plain_text",
+            "text": "Test successfully submitted for "+url,
+            "emoji": true
+          }
+        },
+        {
+          "type": "divider"
+        }
+      ]
+}
+
+exports.errorBlock = (code, message) =>{
+
+    return [
+      {
+        "type": "header",
+        "text": {
+          "type": "plain_text",
+          "text": "Error while submitting test",
+          "emoji": true
+        }
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "type": "section",
+        "text": {
+          "type": "plain_text",
+          "text": "Status Code : -  " + code,
+          "emoji": true
+        }
+      },
+      {
+        "type": "section",
+        "text": {
+          "type": "plain_text",
+          "text": "Status Text : -  " + message,
+          "emoji": true
+        }
+      }
+    ]
+}
+
+exports.wptResponseBlock = (url,summary,waterfallLink) =>{
 
     return [
         {
@@ -281,7 +200,7 @@ exports.getBlockResult = (url,summary,waterfallLink) =>{
           "type": "section",
           "text": {
             "type": "mrkdwn",
-            "text": "URL Tested Link"
+            "text": "*URL Tested Link*"
           },
           "accessory": {
             "type": "button",
@@ -299,7 +218,7 @@ exports.getBlockResult = (url,summary,waterfallLink) =>{
           "type": "section",
           "text": {
             "type": "mrkdwn",
-            "text": "Find your test details here."
+            "text": "*Find your test details here.*"
           },
           "accessory": {
             "type": "button",

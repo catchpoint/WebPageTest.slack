@@ -1,4 +1,5 @@
 {
     "wpt_api_key" : "API_KEY",
-    "slack_token" : "SLACK_BOT_TOKEN"
+    "slack_token" : "SLACK_BOT_TOKEN",
+    "channel_id" : "CHANNEL_ID"
 }

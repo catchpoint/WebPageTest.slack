@@ -2,11 +2,12 @@ const express = require('express')
 const router = express.Router()
 const { WebClient } = require('@slack/web-api');
 const WebPageTest = require("webpagetest");
-const helpers = require('../helpFunc');
+const wptHelpers = require('../utils/wptHelpers');
+const slackHelpers = require('../utils/slackHelpers');
 const config = require('config');
 
 const token = config.slack_token;
-const wpt = new WebPageTest('www.webpagetest.org',config.wpt_api_key);
+const wpt = new WebPageTest('www.webpagetest.org', config.wpt_api_key);
 
 let options = {
   "firstViewOnly": true,
@@ -22,13 +23,13 @@ const web = new WebClient(token);
 router.post('/slack/webpagetest', async (req, res) => {
   const { trigger_id, channel_id } = req.body;
   res.status(200).send('');
-  let locationsResult = await helpers.getLocations(wpt,options);
+  const locationsResult = await wptHelpers.getLocations(wpt, options);
   const allLocations = locationsResult.result.response.data.location;
-    await web.views.open({
-      trigger_id: trigger_id,
-      channel_id: channel_id,
-      view: helpers.getDialogView(allLocations),
-    });
+  await web.views.open({
+    trigger_id: trigger_id,
+    channel_id: channel_id,
+    view: slackHelpers.dialogView(allLocations),
+  });
 });
 
 router.post('/slack/interactions', async (req, res) => {
@@ -46,75 +47,40 @@ router.post('/slack/interactions', async (req, res) => {
       options.connectivity = values.connectivity.connectivity.selected_option.value;
       options.emulateMobile = values.emulateMobile.emulateMobile.selected_option.value == 'true' ? true : false;
 
-      let wptPromise = helpers.runTest(wpt, url, options);
+      const wptPromise = wptHelpers.runTest(wpt, url, options);
       await web.chat.postMessage({
         text: 'Response from WPT',
-        channel: 'C0211K9JTS9',
-        blocks: [
-          {
-            "type": "divider"
-          },
-          {
-            "type": "section",
-            "text": {
-              "type": "plain_text",
-              "text": "Test successfully submitted for "+url,
-              "emoji": true
-            }
-          },
-          {
-            "type": "divider"
-          }
-        ]
+        channel: config.channel_id,
+        blocks: slackHelpers.testSubmissionBlock(url)
 
       })
 
-      let wptResult = await wptPromise;
-      let wptResultLink = wptResult.result.data.summary;
-      let waterfallLink = wptResult.result.data.median.firstView.images.waterfall;
+      const wptResult = await wptPromise;
+      const wptResultLink = wptResult.result.data.summary;
+      const waterfallLink = wptResult.result.data.median.firstView.images.waterfall;
+
       await web.chat.postMessage({
         text: 'Response from WPT',
-        channel: 'C0211K9JTS9',
-        blocks: helpers.getBlockResult(url,wptResultLink,waterfallLink)
+        channel: config.channel_id,
+        blocks: slackHelpers.wptResponseBlock(url, wptResultLink, waterfallLink)
       });
     }
   } catch (error) {
 
-    console.log("error :-",error)
-    await web.chat.postMessage({
-      text: 'Response from WPT',
-      channel: 'C0211K9JTS9',
-      blocks: [
-        {
-          "type": "header",
-          "text": {
-            "type": "plain_text",
-            "text": "Error while submitting test",
-            "emoji": true
-          }
-        },
-        {
-          "type": "divider"
-        },
-        {
-          "type": "section",
-          "text": {
-            "type": "plain_text",
-            "text": "Status Code : -  " + error.statusCode,
-            "emoji": true
-          }
-        },
-        {
-          "type": "section",
-          "text": {
-            "type": "plain_text",
-            "text": "Status Text : -  " + error.statusText,
-            "emoji": true
-          }
-        }
-      ]
+    if (error.error)
+      await web.chat.postMessage({
+        text: 'Response from WPT',
+        channel: config.channel_id,
+        blocks: slackHelpers.errorBlock(error.error.code, error.error.message)
 
-    })
+      })
+    else
+      await web.chat.postMessage({
+        text: 'Response from WPT',
+        channel: config.channel_id,
+        blocks: slackHelpers.errorBlock(error.statusCode, error.statusText)
+
+      })
   }
 
 });
