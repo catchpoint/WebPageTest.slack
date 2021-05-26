@@ -200,13 +200,13 @@ exports.wptResponseBlock = (url,summary,waterfallLink) =>{
           "type": "section",
           "text": {
             "type": "mrkdwn",
-            "text": "*URL Tested Link*"
+            "text": "*URL Tested*"
           },
           "accessory": {
             "type": "button",
             "text": {
               "type": "plain_text",
-              "text": "URL Link",
+              "text": "View Tested URL",
               "emoji": true
             },
             "value": "click_me_123",
@@ -224,7 +224,7 @@ exports.wptResponseBlock = (url,summary,waterfallLink) =>{
             "type": "button",
             "text": {
               "type": "plain_text",
-              "text": "WebPageTest",
+              "text": "WebPageTest Results",
               "emoji": true
             },
             "value": "click_me_123",
@@ -239,7 +239,7 @@ exports.wptResponseBlock = (url,summary,waterfallLink) =>{
           "type": "image",
           "title": {
             "type": "plain_text",
-            "text": "Waterfall Model",
+            "text": "Performance Waterfall",
             "emoji": true
           },
           "image_url": waterfallLink,
