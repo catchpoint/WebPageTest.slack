@@ -11,7 +11,7 @@ The WebPageTest Slack bot lets you run tests against WebPageTest from within Sla
 
 ## Installing the Slack Bot
 
-### Creating the Slack App
+### 1. Creating the Slack App
 1. [Create a Slack app](https://api.slack.com/apps/new) for your workspace and choose "From Scratch" for the application type.
 
 ![A screenshot showing the application type dialog for a new Slack app](https://user-images.githubusercontent.com/66536/120535887-22764e00-c3a9-11eb-8a91-5bccd4edb849.png)
@@ -28,7 +28,7 @@ The WebPageTest Slack bot lets you run tests against WebPageTest from within Sla
 
 ![token-blurred](https://user-images.githubusercontent.com/66536/120537513-ffe53480-c3aa-11eb-807a-f507ff750acb.png)
 
-### Setting up the Node Server
+### 2. Setting up the Node Server
 The logic that submits tests to WebPageTest and returns the results back to Slack is handled by a Node server that you'll need to have running somewhere that Slack can access. Here's how to get that running.
 
 1. Clone this repository to the location you want to run the Node server from and run `npm install` to install all the dependencies.
