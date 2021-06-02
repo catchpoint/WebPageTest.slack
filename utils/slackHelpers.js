@@ -2,25 +2,158 @@ const connectivity = require('./connectivityOptions');
 
 const  generateLocationOptions = (allLocations)=>{
 
-    let options = [];
-    for(let i=0;i<allLocations.length;i++)
+  let options = [];
+  for(let i=0;i<allLocations.length;i++)
+  {
+    const browsers = allLocations[i].Browsers.split(',');
+    let browserOptions = [];
+    for(let j=0;j<browsers.length;j++)
     {
-        let optionsObject = {
-          "text": {
-            "type": "plain_text",
-            "text": allLocations[i].Label,
-            "emoji": true
-          },
-          "value":  allLocations[i].location
-        }
-        options.push(optionsObject);
+      let optionsObject = {
+        "text": {
+          "type": "plain_text",
+          "text": browsers[j],
+          "emoji": true
+        },
+        "value":  allLocations[i].location+':'+browsers[j]
+      }
+      browserOptions.push(optionsObject)
     }
+    let locationOptionObject = {
+      label: {
+        type: "plain_text",
+        text: allLocations[i].Label,
+      },
+      options : browserOptions
 
-    return options;
+    }
+      
+      options.push(locationOptionObject);
+  }
+
+  return options;
 }
 
 
-exports.dialogView = (allLocations) =>{
+exports.dialogView = (allLocations,url) =>{
+
+
+  let blocks = [
+                 
+    {
+      type: 'section',
+      text: {
+        type: 'plain_text',
+        text: 'Enter below details to get back WPT response',
+        emoji: true,
+      },
+    },
+    {
+      "type": "section",
+      "block_id" : "url", 
+      "text": {
+        "type": "plain_text",
+        "text": url,
+        "emoji": true
+      }
+    }, 
+    {
+      type: 'divider',
+    },
+    {
+      type: "input",
+      block_id: 'location',
+      element: {
+        type: "static_select",
+        placeholder: {
+          type: "plain_text",
+          text: "Select an item",
+          emoji: true
+        },
+        option_groups: generateLocationOptions(allLocations),
+        action_id: "location"
+      },
+      label: {
+        type: "plain_text",
+        text: "Locations",
+        emoji: true
+      }
+    },
+    {
+      type: "input",
+      block_id: 'connectivity',
+      element: {
+        type: "static_select",
+        placeholder: {
+          type: "plain_text",
+          text: "Select an item",
+          emoji: true
+        },
+        options: connectivity.connectivityOptions,
+        action_id: "connectivity"
+      },
+      label: {
+        type: "plain_text",
+        text: "Connectivity",
+        emoji: true
+      }
+    },
+    {
+      type: "section",
+      block_id: 'emulateMobile',
+      text: {
+        type: "plain_text",
+        text: "Emulate Mobile"
+      },
+      accessory: {
+        type: "radio_buttons",
+        initial_option  : {
+          text: {
+            type: "plain_text",
+            text: "False",
+            emoji: true
+          },
+          value: "false"
+      },
+        options: [
+          {
+            text: {
+              type: "plain_text",
+              text: "True",
+              emoji: true
+            },
+            value: "true"
+          },
+          {
+            text: {
+              type: "plain_text",
+              text: "False",
+              emoji: true
+            },
+            value: "false"
+          }
+        ],
+        action_id: "emulateMobile"
+      }
+    }
+  ];
+  if(!url)
+    blocks[1] = 
+    {
+      type: 'input',
+      block_id: 'url',
+      label: {
+        type: 'plain_text',
+        text: 'URL',
+        emoji: true,
+      },
+      element: {
+        type: 'plain_text_input',
+        multiline: true,
+        action_id: 'url',
+      },
+    }
+
 
     return {
         type: 'modal',
@@ -33,124 +166,30 @@ exports.dialogView = (allLocations) =>{
           text: 'Submit',
         },
         callback_id: 'webpagetest',
-        blocks: [
-          {
-            type: 'section',
-            text: {
-              type: 'plain_text',
-              text: 'Enter below details to get back WPT response',
-              emoji: true,
-            },
-          },
-          {
-            type: 'divider',
-          },
-
-          {
-            type: 'input',
-            block_id: 'url',
-            label: {
-              type: 'plain_text',
-              text: 'URL',
-              emoji: true,
-            },
-            element: {
-              type: 'plain_text_input',
-              multiline: true,
-              action_id: 'url',
-            },
-          },
-          {
-            type: "input",
-            block_id: 'location',
-            element: {
-              type: "static_select",
-              placeholder: {
-                type: "plain_text",
-                text: "Select an item",
-                emoji: true
-              },
-              options: generateLocationOptions(allLocations),
-              action_id: "location"
-            },
-            label: {
-              type: "plain_text",
-              text: "Locations",
-              emoji: true
-            }
-          },
-          {
-            type: "input",
-            block_id: 'connectivity',
-            element: {
-              type: "static_select",
-              placeholder: {
-                type: "plain_text",
-                text: "Select an item",
-                emoji: true
-              },
-              options: connectivity.connectivityOptions,
-              action_id: "connectivity"
-            },
-            label: {
-              type: "plain_text",
-              text: "Connectivity",
-              emoji: true
-            }
-          },
-          {
-            type: "section",
-            block_id: 'emulateMobile',
-            text: {
-              type: "plain_text",
-              text: "Emulate Mobile"
-            },
-            accessory: {
-              type: "radio_buttons",
-              options: [
-                {
-                  text: {
-                    type: "plain_text",
-                    text: "True",
-                    emoji: true
-                  },
-                  value: "true"
-                },
-                {
-                  text: {
-                    type: "plain_text",
-                    text: "False",
-                    emoji: true
-                  },
-                  value: "false"
-                }
-              ],
-              action_id: "emulateMobile"
-            }
-          }
-        ],
-      }
+        blocks: blocks
+}
 }
 
 exports.testSubmissionBlock = (url) =>{
 
-    return [
-        {
-          "type": "divider"
-        },
-        {
-          "type": "section",
-          "text": {
-            "type": "plain_text",
-            "text": "Test successfully submitted for "+url,
-            "emoji": true
-          }
-        },
-        {
-          "type": "divider"
+  return [
+      {
+        "type": "divider"
+      },
+      {
+        "type": "section",
+        "text": {
+          "type": "plain_text",
+          "text": "Test successfully submitted for "+url,
+          "emoji": true
         }
-      ]
+      },
+      {
+        "type": "divider"
+      }
+    ]
 }
+
 
 exports.errorBlock = (code, message) =>{
 
