@@ -21,14 +21,14 @@ let options = {
 // Initialize
 const web = new WebClient(token);
 router.post('/slack/webpagetest', async (req, res) => {
-  const { trigger_id, channel_id } = req.body;
+  const { trigger_id, channel_id, text } = req.body;
   res.status(200).send('');
   const locationsResult = await wptHelpers.getLocations(wpt, options);
   const allLocations = locationsResult.result.response.data.location;
   await web.views.open({
     trigger_id: trigger_id,
     channel_id: channel_id,
-    view: slackHelpers.dialogView(allLocations),
+    view: slackHelpers.dialogView(allLocations,text),
   });
 });
 
@@ -41,7 +41,22 @@ router.post('/slack/interactions', async (req, res) => {
     if (payload.type === 'view_submission' && payload.view.callback_id === 'webpagetest') {
 
       const { values } = payload.view.state;
-      const url = values.url.url.value;
+      let url;
+      const blocks = payload.view.blocks;
+      if(values.url)
+        url = values.url.url.value;
+      else
+      {
+        for(let i=0;i<blocks.length;i++)
+        {
+          if(blocks[i].block_id == 'url')
+          {
+            console.log(blocks[i])
+            url = blocks[i].text.text;
+  
+          }
+        }
+      }
 
       options.location = values.location.location.selected_option.value;
       options.connectivity = values.connectivity.connectivity.selected_option.value;
@@ -66,7 +81,7 @@ router.post('/slack/interactions', async (req, res) => {
       });
     }
   } catch (error) {
-
+    
     if (error.error)
       await web.chat.postMessage({
         text: 'Response from WPT',
