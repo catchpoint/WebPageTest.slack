@@ -53,7 +53,7 @@ npm install
 npm start
 ```
 
-If you get response like "Express server running on port 5000", server has been successfully setup. If your node server is publicly accessible, you're good to move on with the final configuration of the Slack bot. If it's not, you can use ngrok to make the server accessible.
+If you get response like "Express server running on port 5000", server has been successfully setup. If your node server is publicly accessible, you're good to move on with the final configuration of the Slack bot. If it's not, [you can use ngrok to make the server accessible](#optional-use-ngrok-to-make-the-server-publicly-accessible).
 
 ### 3. Final configuration of Slack Bot
 The Node server provides two API endpoints used to handle requests.
@@ -115,4 +115,4 @@ ngrok http 5000
 ```
 4. This creates a tunnel and returns a public URL for accessing the server.
 
-From here, the steps for configuring the app are the same.
+From here, the steps for [configuring the app are the same](#3-final-configuration-of-slack-bot).
