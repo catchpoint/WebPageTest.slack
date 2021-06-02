@@ -35,7 +35,7 @@ const  generateLocationOptions = (allLocations)=>{
 }
 
 
-exports.dialogView = (allLocations,url) =>{
+exports.dialogView = (allLocations,url,channel_id) =>{
 
 
   let blocks = [
@@ -165,7 +165,7 @@ exports.dialogView = (allLocations,url) =>{
           type: 'plain_text',
           text: 'Submit',
         },
-        callback_id: 'webpagetest',
+        callback_id: channel_id,
         blocks: blocks
 }
 }

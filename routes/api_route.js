@@ -28,17 +28,17 @@ router.post('/slack/webpagetest', async (req, res) => {
   await web.views.open({
     trigger_id: trigger_id,
     channel_id: channel_id,
-    view: slackHelpers.dialogView(allLocations,text),
+    view: slackHelpers.dialogView(allLocations,text,channel_id),
   });
 });
 
 router.post('/slack/interactions', async (req, res) => {
-
+  let payload;
   try {
 
     res.status(200).send('');
-    const payload = JSON.parse(req.body.payload);
-    if (payload.type === 'view_submission' && payload.view.callback_id === 'webpagetest') {
+    payload = JSON.parse(req.body.payload);
+    if (payload.type === 'view_submission') {
 
       const { values } = payload.view.state;
       let url;
@@ -51,9 +51,7 @@ router.post('/slack/interactions', async (req, res) => {
         {
           if(blocks[i].block_id == 'url')
           {
-            console.log(blocks[i])
             url = blocks[i].text.text;
-  
           }
         }
       }
@@ -65,7 +63,7 @@ router.post('/slack/interactions', async (req, res) => {
       const wptPromise = wptHelpers.runTest(wpt, url, options);
       await web.chat.postMessage({
         text: 'Response from WPT',
-        channel: config.channel_id,
+        channel: payload.view.callback_id,
         blocks: slackHelpers.testSubmissionBlock(url)
 
       })
@@ -76,7 +74,7 @@ router.post('/slack/interactions', async (req, res) => {
 
       await web.chat.postMessage({
         text: 'Response from WPT',
-        channel: config.channel_id,
+        channel: payload.view.callback_id,
         blocks: slackHelpers.wptResponseBlock(url, wptResultLink, waterfallLink)
       });
     }
@@ -85,14 +83,14 @@ router.post('/slack/interactions', async (req, res) => {
     if (error.error)
       await web.chat.postMessage({
         text: 'Response from WPT',
-        channel: config.channel_id,
+        channel: payload.view.callback_id,
         blocks: slackHelpers.errorBlock(error.error.code, error.error.message)
 
       })
     else
       await web.chat.postMessage({
         text: 'Response from WPT',
-        channel: config.channel_id,
+        channel: payload.view.callback_id,
         blocks: slackHelpers.errorBlock(error.statusCode, error.statusText)
 
       })
