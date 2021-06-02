@@ -56,7 +56,7 @@ $ npm start
 
 ![image](https://user-images.githubusercontent.com/31168643/118681835-86333f80-b81d-11eb-9d60-d03799795160.png)
 
-![image](https://user-images.githubusercontent.com/31168643/118682029-b24ec080-b81d-11eb-9545-c8d96014e84b.png)
+![image](https://user-images.githubusercontent.com/31168643/120532871-c7bb1180-c3fd-11eb-948b-0e21ba125b7b.png)
 
 
 * **Next is adding a interactivity URL, any interactions with modals or interactive components are sent to this URL. Add the second APIs URL to post the message once response from WPT is fetched. (https://ngrokUrl/api/slack/interactions)**
