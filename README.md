@@ -1,4 +1,5 @@
 <p align="center"><img src="https://docs.webpagetest.org/img/wpt-navy-logo.png" alt="WebPageTest Logo" /></p>
+<p align="center"><a href="https://docs.webpagetest.org/api/integrations/#officially-supported-integrations">Learn about more WebPageTest API Integrations in our docs</a></p>
 
 # WebPageTest Slack Bot
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](/LICENSE)
@@ -108,3 +109,6 @@ ngrok http 5000
 4. This creates a tunnel and returns a public URL for accessing the server.
 
 From here, the steps for [configuring the app are the same](#3-final-configuration-of-slack-bot).
+
+---
+<p align="center"><a href="https://docs.webpagetest.org/api/integrations/#officially-supported-integrations">Learn about more WebPageTest API Integrations in our docs</a></p>
