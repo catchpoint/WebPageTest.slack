@@ -71,18 +71,18 @@ _Once you have added the slash command and interactivity URL, you might be asked
 
 5. Finally, in Slack, you'll need to add WebPageTest to the channel you want to be able to run tests from. You can do this by starting to type "add apps", selecting "Add apps to this channel", then clicking "Install" next to the WebPageTest application.
 
-<img width="653" alt="Screen Shot 2021-06-02 at 4 14 45 PM" src="https://user-images.githubusercontent.com/66536/120553236-de417880-c3bd-11eb-8c51-00cb43e2a23f.png">
+<img width="668" alt="Screen Shot 2021-06-03 at 10 33 02 AM" src="https://user-images.githubusercontent.com/66536/120671600-29f43080-c457-11eb-966a-01f575ef2aa5.png">
 
-6. **Optional** You can also set a custom app icon for the app by navigating to the "Basic Information" page for your application (found in the sidebar of the Slack navigation) and adding the icon under "Display Information". We've provided [an icon for you in the repository that you can use](https://github.com/WebPageTest/webpagetest-slack/blob/master/webpagetest.jpg).
+6. **Optional** You can also set a custom app icon for the app by navigating to the "Basic Information" page for your application (found in the sidebar of the Slack navigation) and adding the icon under "Display Information". We've provided [an icon for you in the repository that you can use](https://github.com/WebPageTest/webpagetest-slack/blob/master/webpagetest.png).
 
-![Screen Shot 2021-06-02 at 3 05 51 PM](https://user-images.githubusercontent.com/66536/120545280-10e67380-c3b4-11eb-8867-c3818961aafc.png)
+![Screen Shot 2021-06-03 at 10 29 07 AM](https://user-images.githubusercontent.com/66536/120671651-36788900-c457-11eb-8e65-9c758fde991a.png)
 
 ## Running the Slack Bot
 With the server running and the Slack application configured, you're ready to start testing!
 
 1. Type /webpagetest in Slack. You should see a box recommending the WebPageTest app.
 
-<img width="392" alt="Screen Shot 2021-06-02 at 3 56 43 PM" src="https://user-images.githubusercontent.com/66536/120550965-227f4980-c3bb-11eb-944b-12dc40d8b404.png">
+<img width="398" alt="Screen Shot 2021-06-03 at 10 29 49 AM" src="https://user-images.githubusercontent.com/66536/120671667-3bd5d380-c457-11eb-8cc6-c6e40de534f2.png">
 
 2. Add the URL you want to test and press enter. For example:
 
@@ -90,11 +90,12 @@ With the server running and the Slack application configured, you're ready to st
 
 3. A modal box will be displayed letting you customize the test by selecting a WebPageTest testing location and browser, a connectivity profile, and (optionally) mobile emulation.
 
-<img width="527" alt="Screen Shot 2021-06-02 at 4 17 11 PM" src="https://user-images.githubusercontent.com/66536/120553353-0335eb80-c3be-11eb-949c-57f7bc6fe10d.png">
+<img width="517" alt="Screen Shot 2021-06-03 at 10 32 16 AM" src="https://user-images.githubusercontent.com/66536/120671798-59a33880-c457-11eb-944a-2d105e052dc0.png">
+
 
 4. After you hit "Submit", the WebPageTest application will first post a message letting you know the test has been submitted. Once the test is complete, the WebPageTest app will add another message with a thumbnail of the waterfall and a link to the full WebPageTest results.
 
-<img width="707" alt="Screen Shot 2021-06-02 at 4 18 20 PM" src="https://user-images.githubusercontent.com/66536/120553477-26f93180-c3be-11eb-8dc6-370d3e7575c7.png">
+<img width="669" alt="Screen Shot 2021-06-03 at 10 30 17 AM" src="https://user-images.githubusercontent.com/66536/120671728-498b5900-c457-11eb-93f7-a04e7632c81d.png">
 
 ## Optional: Use ngrok to make the server publicly accessible
 By default, the Node server runs on port 5000 on localhost. You can use ngrok to make the server accessible to the Slack servers if your Node server is not already publicly accessible.
