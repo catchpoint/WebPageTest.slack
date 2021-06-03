@@ -1,97 +1,109 @@
-## WebPageTest and Slack Integration
+<p align="center"><img src="https://docs.webpagetest.org/img/wpt-navy-logo.png" alt="WebPageTest Logo" /></p>
 
-### Steps for Integration	
+# WebPageTest Slack Bot
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](/LICENSE)
 
-#### 1. Setting up a node-server.
-* Clone this repository.
-* Update the wpt_api_key, slack_token and channel_id in default.json of config.
-* Run "npm install" to install all dependencies.
+The WebPageTest Slack bot lets you run tests against WebPageTest from within Slack. Once the tests are complete, a copy of the waterfall and a link to the full results will be posted in your Slack channel, helping you to easily troubleshoot and diagnose performance issues directly from your Slack development channels.
 
+**Features:**
+- Run WebPageTest from within Slack, and get the results posted back automatically.
+- Full access to WebPageTest's 30+ test locations.
+
+## Installing the Slack Bot
+
+### 1. Creating the Slack App
+1. [Create a Slack app](https://api.slack.com/apps/new) for your workspace and choose "From Scratch" for the application type.
+
+![A screenshot showing the application type dialog for a new Slack app](https://user-images.githubusercontent.com/66536/120535887-22764e00-c3a9-11eb-8a91-5bccd4edb849.png)
+
+2. Set the App Name (might we suggest the simple, yet accurate, "WebPageTest") and make sure you've selected the workspace you want to add the application to.
+
+![A screenshot showing the App Name and workspace selection](https://user-images.githubusercontent.com/66536/120536167-72edab80-c3a9-11eb-9565-c32574443ef6.png)
+
+3. Next, you need to get the Slack token to be referenced in the Node server that will handle all the testing. Navigate to the "OAuth and Permissions" page (found in the sidebar of the Slack navigation). Before you Install the application to the workspace, you'll need to set the Bot Token Scope to "chat:write".
+
+![Screen Shot 2021-06-02 at 1 58 19 PM](https://user-images.githubusercontent.com/66536/120537313-c14f7a00-c3aa-11eb-8c50-d51562b59091.png)
+
+4. After you've set the Bot Token scope, click "Install to Workspace". The application will be installed and you'll be provided with an oAuth Token for the bot. Copy this somewhere safe as you'll need it when you setup the Node server.
+
+![token-blurred](https://user-images.githubusercontent.com/66536/120537513-ffe53480-c3aa-11eb-807a-f507ff750acb.png)
+
+### 2. Setting up the Node Server
+The logic that submits tests to WebPageTest and returns the results back to Slack is handled by a Node server that you'll need to have running somewhere that Slack can access. Here's how to get that running.
+
+1. Clone this repository to the location you want to run the Node server from and run `npm install` to install all the dependencies.
 ```bash
-$ npm install
+npm install
 ```
 
-* Run "npm start" to start the node-server.
+2. Update `config/default.json` with [an WebPageTest API Key](https://app.webpagetest.org/ui/entry/wpt/signup?enableSub=true&utm_source=docs&utm_medium=github&utm_campaign=slackbot&utm_content=account) and the Slack token you copied earlier.
+
+3. Run `npm start` to start the server.
 
 ```bash
-$ npm start
+npm start
 ```
 
-* If you get response like "Express server running on port 5000", server has been successfully setup. You can just add the required APIs and their dependencies if you already have a node-server running.
-* There are currently two APIs to serve requests
-	* To trigger slack modal on command execution. This path will be used for slash commands in slack (/api/slack/webpagetest)
-	* To generate the response coming from webpagetest as view and post on slack. This path will be used for interactivity URL (/api/slack/integrations)
-	
-#### Note :- By default the node-server runs on port 5000 on localhost and is not to be accessible by slack servers, we can achieve this by running ngrok against port 5000. You can skip the below step if you have publicly accessible node-server.
+If you get response like "Express server running on port 5000", server has been successfully setup. If your node server is publicly accessible, you're good to move on with the final configuration of the Slack bot. If it's not, [you can use ngrok to make the server accessible](#optional-use-ngrok-to-make-the-server-publicly-accessible).
 
-#### 2. Making locally running node-server publicly accessible
-* Install and start [ngrok](https://ngrok.com/download)
-* After installing ngrok run "ngrok http 5000"
-* This creates a tunnel and returns public URL which forwards request to localhost:5000, on which our node-server is running.
-* Now our node-server is publicly accessible by the URLs returned by ngrok.
+### 3. Final configuration of Slack Bot
+The Node server provides two API endpoints used to handle requests.
 
-#### 3. Configuring slack app
+- The "/api/slack/webpagetest" path will be used for slash commands in Slack to trigger tests.
+- The "/api/slack/interactions" path will be used to process the response from WebPageTest and post the results back to Slack.
 
-* **Create a slack app for your workspace.**
+The final step is to use set the Slack bot to use these URL's. 
 
-![image](https://user-images.githubusercontent.com/31168643/118680453-5e8fa780-b81c-11eb-89c9-0ac2f24129b1.png)
+1. Navigate to the "Slash Commands" page for your application (found in the sidebar of the Slack navigation) and "Create a New Command" with the following settings:
 
+- **Command:** /webpagetest
+- **Request URL:** The full URL for the "/api/slack/webpagetest" endpoint of your server.
+- **Short Description:** Runs WebPageTest
+- **Usage Hint:** [url to test]
 
-* **Choose the app type as "From Scratch"**
+![Screen Shot 2021-06-02 at 2 56 20 PM](https://user-images.githubusercontent.com/66536/120544133-b39df280-c3b2-11eb-8646-3bbd74f9101f.png)
 
-![image](https://user-images.githubusercontent.com/31168643/118680814-ad3d4180-b81c-11eb-81d7-b93f47cc94d3.png)
+2. Navigate to the "Interactivity & Shortcuts" page for your application (found in the sidebar of the Slack navigation), enable Interactivity, and then provide the full URL to the "/api/slack/interactions" endpoint for your server.
 
-* **Once the slack app is created, go to features tab of the application added and add the following : -**
+![Screen Shot 2021-06-02 at 4 09 03 PM](https://user-images.githubusercontent.com/66536/120552522-f82e8b80-c3bc-11eb-90d0-6b3b3721044d.png)
 
-	* **Bot User OAuth Token**
+_Once you have added the slash command and interactivity URL, you might be asked to reinstall your app, please do it to apply the necessary changes for your app._
 
-![image](https://user-images.githubusercontent.com/31168643/118681458-38b6d280-b81d-11eb-9854-599be05c2900.png)
-	
-* **Scope To Bot Token**
-	
+5. Finally, in Slack, you'll need to add WebPageTest to the channel you want to be able to run tests from. You can do this by starting to type "add apps", selecting "Add apps to this channel", then clicking "Install" next to the WebPageTest application.
 
-![image](https://user-images.githubusercontent.com/31168643/118681682-66038080-b81d-11eb-9592-d3b9f4106e5c.png)
-	
-* **Slash Command, make sure to add api path of triggering slack URL modal. (https://ngrokUrl/api/slack/webpagetest)**
+<img width="653" alt="Screen Shot 2021-06-02 at 4 14 45 PM" src="https://user-images.githubusercontent.com/66536/120553236-de417880-c3bd-11eb-8c51-00cb43e2a23f.png">
 
-![image](https://user-images.githubusercontent.com/31168643/118681835-86333f80-b81d-11eb-9d60-d03799795160.png)
+6. **Optional** You can also set a custom app icon for the app by navigating to the "Basic Information" page for your application (found in the sidebar of the Slack navigation) and adding the icon under "Display Information". We've provided [an icon for you in the repository that you can use](https://github.com/WebPageTest/webpagetest-slack/blob/master/webpagetest.jpg).
 
-![image](https://user-images.githubusercontent.com/31168643/120532871-c7bb1180-c3fd-11eb-948b-0e21ba125b7b.png)
+![Screen Shot 2021-06-02 at 3 05 51 PM](https://user-images.githubusercontent.com/66536/120545280-10e67380-c3b4-11eb-8867-c3818961aafc.png)
 
+## Running the Slack Bot
+With the server running and the Slack application configured, you're ready to start testing!
 
-* **Next is adding a interactivity URL, any interactions with modals or interactive components are sent to this URL. Add the second APIs URL to post the message once response from WPT is fetched. (https://ngrokUrl/api/slack/interactions)**
+1. Type /webpagetest in Slack. You should see a box recommending the WebPageTest app.
 
-![image](https://user-images.githubusercontent.com/31168643/118682126-c8f51780-b81d-11eb-8975-b397dd3f21f5.png)
+<img width="392" alt="Screen Shot 2021-06-02 at 3 56 43 PM" src="https://user-images.githubusercontent.com/66536/120550965-227f4980-c3bb-11eb-944b-12dc40d8b404.png">
 
+2. Add the URL you want to test and press enter. For example:
 
-#### Note : - Once you have added the slash command and interactivity URL, you might be asked to reinstall your app, please do it to make changes applicable on your app.
+`/webpagetest https://webpagetest.org`
 
-![image](https://user-images.githubusercontent.com/31168643/118682199-da3e2400-b81d-11eb-93b1-66f0ac401cc0.png)
+3. A modal box will be displayed letting you customize the test by selecting a WebPageTest testing location and browser, a connectivity profile, and (optionally) mobile emulation.
 
+<img width="527" alt="Screen Shot 2021-06-02 at 4 17 11 PM" src="https://user-images.githubusercontent.com/66536/120553353-0335eb80-c3be-11eb-949c-57f7bc6fe10d.png">
 
-#### 4. Run the command on slack
-* **Next step is to check our command on slack, start by typing webpagetest, you should see a recommendation of webpagetest as below.**
+4. After you hit "Submit", the WebPageTest application will first post a message letting you know the test has been submitted. Once the test is complete, the WebPageTest app will add another message with a thumbnail of the waterfall and a link to the full WebPageTest results.
 
-![image](https://user-images.githubusercontent.com/31168643/118682354-fe016a00-b81d-11eb-9825-61a35a64a7dc.png)
+<img width="707" alt="Screen Shot 2021-06-02 at 4 18 20 PM" src="https://user-images.githubusercontent.com/66536/120553477-26f93180-c3be-11eb-8dc6-370d3e7575c7.png">
 
-* **Above command should open a modal like below**
+## Optional: Use ngrok to make the server publicly accessible
+By default, the Node server runs on port 5000 on localhost. You can use ngrok to make the server accessible to the Slack servers if your Node server is not already publicly accessible.
 
-![image](https://user-images.githubusercontent.com/31168643/118682409-0b1e5900-b81e-11eb-8c4a-d178b57248a7.png)
+1. Install and start [ngrok](https://ngrok.com/download)
+2. After installing ngrok run "ngrok http 5000"
+```bash
+ngrok http 5000
+```
+4. This creates a tunnel and returns a public URL for accessing the server.
 
-
-* **Enter the values as required and submit, once the request is submitted successfully, an example response like below is posted on the required channel**
-
-![image](https://user-images.githubusercontent.com/31168643/118682454-17a2b180-b81e-11eb-92fa-74b87c1d875d.png)
-
-#### Note : - You can skip some steps accordingly if you already have a slack app or want to integrate in your current node project.
-
-
-	
-	
-	
-	
-	
-	
-
-
-
+From here, the steps for [configuring the app are the same](#3-final-configuration-of-slack-bot).
