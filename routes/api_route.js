@@ -7,8 +7,8 @@ const slackHelpers = require("../utils/slackHelpers");
 
 require("dotenv").config();
 
-const token = process.env.SLACK_TOKEN;
-const wpt = new WebPageTest("www.webpagetest.org", process.env.WPT_API_KEY);
+const token = process.env.SLACK_TOKEN; // Your Slack Token
+const wpt = new WebPageTest("www.webpagetest.org", process.env.WPT_API_KEY); // Your WPT API Key
 
 let options = {
   firstViewOnly: true,

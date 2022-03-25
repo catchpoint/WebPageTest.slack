@@ -37,7 +37,7 @@ The logic that submits tests to WebPageTest and returns the results back to Slac
 npm install
 ```
 
-2. Update `config/default.json` with [an WebPageTest API Key](https://app.webpagetest.org/ui/entry/wpt/signup?enableSub=true&utm_source=docs&utm_medium=github&utm_campaign=slackbot&utm_content=account) and the Slack token you copied earlier.
+2. Update `.env` with [an WebPageTest API Key](https://app.webpagetest.org/ui/entry/wpt/signup?enableSub=true&utm_source=docs&utm_medium=github&utm_campaign=slackbot&utm_content=account) and the Slack token you copied earlier.
 
 3. Run `npm start` to start the server.
 
