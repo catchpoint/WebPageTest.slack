@@ -1,7 +1,7 @@
 {
   "name": "wpt-slack",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.1.0",
+  "description": "The WebPageTest Slack bot lets you run tests against WebPageTest from within Slack.",
   "main": "index.js",
   "scripts": {
     "start": "nodemon index",
@@ -14,7 +14,8 @@
     "body-parser": "^1.19.0",
     "dotenv": "^16.0.0",
     "express": "^4.17.1",
+    "ngrok": "^4.3.3",
     "nodemon": "^2.0.7",
-    "webpagetest": "^0.4.0"
+    "webpagetest": "^0.6.0"
   }
 }
