@@ -55,7 +55,6 @@ router.post("/slack/interactions", async (req, res) => {
       options.connectivity = values.connectivity.connectivity.selected_option.value;
       options.emulateMobile = values.emulateMobile.emulateMobile.selected_option.value == "true" ? true : false;
       options.device = values.mobiledevice.mobiledevice.selected_option.value;
-      console.log(options);
 
       // const wptPromise = wptHelpers.runTest(wpt, url, options);
       await web.chat.postMessage({
