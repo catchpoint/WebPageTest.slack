@@ -1,6 +1,6 @@
 {
   "name": "wpt-slack",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "The WebPageTest Slack bot lets you run tests against WebPageTest from within Slack.",
   "main": "index.js",
   "scripts": {

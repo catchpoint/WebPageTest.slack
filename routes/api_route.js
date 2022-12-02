@@ -8,7 +8,7 @@ const slackHelpers = require("../utils/slackHelpers");
 require("dotenv").config();
 
 const token = process.env.SLACK_TOKEN; // Your Slack Token
-const wpt = new WebPageTest("www.webpagetest.org", process.env.WPT_API_KEY); // Your WPT API Key
+let WPT_API_KEY;
 
 let options = {
   firstViewOnly: true,
@@ -24,13 +24,42 @@ const web = new WebClient(token);
 router.post("/slack/webpagetest", async (req, res) => {
   const { trigger_id, channel_id, text } = req.body;
   res.status(200).send("");
+  const wpt = new WebPageTest("www.webpagetest.org", "WPT_API_KEY"); // Your WPT API Key
   const locationsResult = await wptHelpers.getLocations(wpt, options);
   const allLocations = locationsResult.result.response.data.location;
   await web.views.open({
     trigger_id: trigger_id,
     channel_id: channel_id,
-    view: slackHelpers.dialogView(allLocations, text, channel_id),
+    view: slackHelpers.dialogView(allLocations, text, WPT_API_KEY, channel_id),
   });
+});
+
+router.post("/slack/updatekey", async (req, res) => {
+  const { text, channel_id } = req.body;
+  res.status(200).send("");
+
+  WPT_API_KEY = text; //updating the key
+
+  try {
+    await web.chat.postMessage({
+      channel: channel_id,
+      text: text,
+      blocks: slackHelpers.keyUpdateBlock(channel_id),
+    });
+  } catch (error) {
+    if (error.error)
+      await web.chat.postMessage({
+        text: "Response from WPT",
+        channel: payload.view.callback_id,
+        blocks: slackHelpers.errorBlock(error.error.code, error.error.message),
+      });
+    else
+      await web.chat.postMessage({
+        text: "Response from WPT",
+        channel: payload.view.callback_id,
+        blocks: slackHelpers.errorBlock(error.statusCode, error.statusText),
+      });
+  }
 });
 
 router.post("/slack/interactions", async (req, res) => {
@@ -38,9 +67,11 @@ router.post("/slack/interactions", async (req, res) => {
   try {
     res.status(200).send("");
     payload = JSON.parse(req.body.payload);
+
     if (payload.type === "view_submission") {
       const { values } = payload.view.state;
       let url;
+      if (values.key) WPT_API_KEY = values.key.key.value;
       const blocks = payload.view.blocks;
       if (values.url) url = values.url.url.value;
       else {
@@ -56,7 +87,8 @@ router.post("/slack/interactions", async (req, res) => {
       options.emulateMobile = values.emulateMobile.emulateMobile.selected_option.value == "true" ? true : false;
       options.device = values.mobiledevice.mobiledevice.selected_option.value;
 
-      // const wptPromise = wptHelpers.runTest(wpt, url, options);
+      const wpt = new WebPageTest("www.webpagetest.org", WPT_API_KEY); // Your WPT API Key
+      const wptPromise = wptHelpers.runTest(wpt, url, options);
       await web.chat.postMessage({
         text: "Response from WPT",
         channel: payload.view.callback_id,

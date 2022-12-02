@@ -31,7 +31,7 @@ const generateLocationOptions = (allLocations) => {
   return options;
 };
 
-exports.dialogView = (allLocations, url, channel_id) => {
+exports.dialogView = (allLocations, url, key, channel_id) => {
   let blocks = [
     {
       type: "section",
@@ -47,6 +47,15 @@ exports.dialogView = (allLocations, url, channel_id) => {
       text: {
         type: "plain_text",
         text: url,
+        emoji: true,
+      },
+    },
+    {
+      type: "section",
+      block_id: "key",
+      text: {
+        type: "plain_text",
+        text: "Use /update command to update api key",
         emoji: true,
       },
     },
@@ -173,6 +182,27 @@ exports.dialogView = (allLocations, url, channel_id) => {
       },
     };
 
+  if (!key)
+    blocks[2] = {
+      type: "input",
+      block_id: "key",
+      label: {
+        type: "plain_text",
+        text: "API Key",
+        emoji: true,
+      },
+      element: {
+        type: "plain_text_input",
+        multiline: false,
+        action_id: "key",
+        placeholder: {
+          type: "plain_text",
+          text: "Enter API Key",
+          emoji: true,
+        },
+      },
+    };
+
   return {
     type: "modal",
     title: {
@@ -233,6 +263,30 @@ exports.errorBlock = (code, message) => {
       text: {
         type: "plain_text",
         text: "Status Text : -  " + message,
+        emoji: true,
+      },
+    },
+  ];
+};
+
+exports.keyUpdateBlock = () => {
+  return [
+    {
+      type: "header",
+      text: {
+        type: "plain_text",
+        text: "Key updated successfully",
+        emoji: true,
+      },
+    },
+    {
+      type: "divider",
+    },
+    {
+      type: "section",
+      text: {
+        type: "plain_text",
+        text: "Use command /webpagetest [url] to initiate the test",
         emoji: true,
       },
     },
