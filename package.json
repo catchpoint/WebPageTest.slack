@@ -1,20 +1,22 @@
 {
-  "name": "wpt-slack",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "webpagetest-slack",
+  "version": "2.0.0",
+  "description": "The WebPageTest Slack bot lets you run tests against WebPageTest from within Slack. Once the tests are complete, a copy of the waterfall and a link to the full results will be posted in your Slack channel, helping you to easily troubleshoot and diagnose performance issues directly from your Slack development channels.",
+  "main": "app.js",
   "scripts": {
-    "start": "nodemon index",
+    "start": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@slack/web-api": "^6.1.0",
-    "body-parser": "^1.19.0",
-    "dotenv": "^16.0.0",
-    "express": "^4.17.1",
-    "nodemon": "^2.0.7",
-    "webpagetest": "^0.4.0"
+    "@slack/bolt": "^3.12.2",
+    "@slack/web-api": "^6.8.0",
+    "colors": "^1.4.0",
+    "dotenv": "^16.0.3",
+    "mongodb": "^4.12.1",
+    "mongoose": "^6.8.0",
+    "nodemon": "^2.0.20",
+    "webpagetest": "^0.6.0"
   }
 }
