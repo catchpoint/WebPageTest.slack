@@ -10,8 +10,6 @@ const dbQuery = require("./config/find_user");
 
 require("dotenv").config();
 
-connectDB();
-
 //WPT config
 let WPT_API_KEY;
 let channel_temp_id;
@@ -25,13 +23,17 @@ let options = {
   //timeout: 240, //Could be activated later
 };
 
+const devEnvCheck = process.env.ENVIRONMENT === "DEVELOPMENT";
+
+if (devEnvCheck !== true) connectDB();
+
 // Initializes your app with your bot token and signing secret
 const app = new App({
-  //token: process.env.SLACK_BOT_TOKEN, //for development
-  signingSecret: process.env.SLACK_SIGNING_SECRET,
-  clientId: process.env.SLACK_CLIENT_ID,
-  clientSecret: process.env.SLACK_CLIENT_SECRET,
-  stateSecret: "my-state-secret",
+  token: devEnvCheck == true ? process.env.SLACK_BOT_TOKEN : undefined, //for development
+  signingSecret: process.env.SLACK_SIGNING_SECRET, //for production
+  clientId: devEnvCheck == false ? process.env.SLACK_CLIENT_ID : undefined, //for production
+  clientSecret: devEnvCheck == false ? process.env.SLACK_CLIENT_SECRET : undefined,
+  stateSecret: devEnvCheck == false ? "my-state-secret" : undefined,
   redirectUri: `${process.env.HOST_URI}/slack/oauth_redirect`,
   scopes: ["commands", "chat:write"],
   installerOptions: {
@@ -39,10 +41,7 @@ const app = new App({
   },
   installationStore: {
     storeInstallation: async (installation) => {
-      if (
-        installation.isEnterpriseInstall &&
-        installation.enterprise !== undefined
-      ) {
+      if (installation.isEnterpriseInstall && installation.enterprise !== undefined) {
         return orgAuth.saveUserOrgInstall(installation);
       }
       if (installation.team !== undefined) {
@@ -51,10 +50,7 @@ const app = new App({
       throw new Error("Failed saving installation data to installationStore");
     },
     fetchInstallation: async (installQuery) => {
-      if (
-        installQuery.isEnterpriseInstall &&
-        installQuery.enterpriseId !== undefined
-      ) {
+      if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) {
         return dbQuery.findUser(installQuery.enterpriseId);
       }
       if (installQuery.teamId !== undefined) {
@@ -63,7 +59,7 @@ const app = new App({
       throw new Error("Failed fetching installation");
     },
     deleteInstallation: async (installQuery) => {
-      console.log("installQuery");
+      console.log("This part is not handeled yet");
     },
   },
 });
@@ -94,12 +90,7 @@ app.command("/webpagetest", async ({ ack, body, client, logger }) => {
     }
     const result = await client.views.open({
       trigger_id: body.trigger_id,
-      view: slackHelpers.dialogView(
-        allLocations,
-        body.text,
-        WPT_API_KEY,
-        body.channel_id
-      ),
+      view: slackHelpers.dialogView(allLocations, body.text, WPT_API_KEY, body.channel_id),
     });
   } catch (error) {
     logger.error(error);
@@ -155,12 +146,8 @@ app.view("SUBMIT_TEST", async ({ ack, payload, client }) => {
     }
 
     options.location = values.location.location.selected_option.value;
-    options.connectivity =
-      values.connectivity.connectivity.selected_option.value;
-    options.emulateMobile =
-      values.emulateMobile.emulateMobile.selected_option.value == "true"
-        ? true
-        : false;
+    options.connectivity = values.connectivity.connectivity.selected_option.value;
+    options.emulateMobile = values.emulateMobile.emulateMobile.selected_option.value == "true" ? true : false;
     options.device = values.mobiledevice.mobiledevice.selected_option.value;
 
     const wpt = new WebPageTest("www.webpagetest.org", WPT_API_KEY); // Your WPT API Key
@@ -173,8 +160,7 @@ app.view("SUBMIT_TEST", async ({ ack, payload, client }) => {
 
     const wptResult = await wptPromise;
     const wptResultLink = wptResult.result.data.summary;
-    const waterfallLink =
-      wptResult.result.data.median.firstView.images.waterfall;
+    const waterfallLink = wptResult.result.data.median.firstView.images.waterfall;
 
     await client.chat.postMessage({
       text: "Response from WPT",
