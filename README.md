@@ -27,7 +27,7 @@ The WebPageTest Slack bot lets you run tests against WebPageTest from within Sla
 
 ![Screen Shot 2021-06-02 at 1 58 19 PM](https://user-images.githubusercontent.com/66536/120537313-c14f7a00-c3aa-11eb-8c50-d51562b59091.png)
 
-4. After you've set the Bot Token scope, click "Install to Workspace". The application will be installed and you'll be provided with an oAuth Token for the bot. Copy this token and paste it under .env file SLACK_BOT_TOKEN = "YOUR_SLACK_TOKEN".
+4. After you've set the Bot Token scope, click "Install to Workspace". The application will be installed and you'll be provided with an oAuth Token for the bot. Rename .env.example to .env in the root directory, Copy this token and paste it under .env file SLACK_BOT_TOKEN = "YOUR_SLACK_TOKEN".
 
 ![token-blurred](https://user-images.githubusercontent.com/66536/120537513-ffe53480-c3aa-11eb-807a-f507ff750acb.png)
 
@@ -47,7 +47,7 @@ npm install
 npm start
 ```
 
-If you get response like "Bolt app is running!", server has been successfully setup. If your node server is publicly accessible, you're good to move on with the final configuration of the Slack bot. If it's not, [you can use ngrok to make the server accessible](#optional-use-ngrok-to-make-the-server-publicly-accessible).
+If you get response like "⚡️ Webpagetest Slack app is running!", server has been successfully setup. If your node server is publicly accessible, you're good to move on with the final configuration of the Slack bot. If it's not, [you can use ngrok to make the server accessible](#optional-use-ngrok-to-make-the-server-publicly-accessible).
 
 ### 3. Final configuration of Slack Bot
 The Node server provides an API endpoint used to handle requests.
@@ -97,7 +97,7 @@ With the server running and the Slack application configured, you're ready to st
 
 `/webpagetest https://webpagetest.org`
 
-3. A modal box will be displayed letting you customize the test by selecting a WebPageTest testing location and browser, a connectivity profile, and (optionally) mobile emulation.
+3. A modal box will be displayed letting you customize the test by selecting a WebPageTest testing location and browser, a connectivity profile, and (optionally) mobile emulation. And an additional API key field for first time users.
 
 <img width="517" alt="Screen Shot 2021-06-03 at 10 32 16 AM" src="https://user-images.githubusercontent.com/66536/120671798-59a33880-c457-11eb-944a-2d105e052dc0.png">
 
@@ -105,6 +105,8 @@ With the server running and the Slack application configured, you're ready to st
 4. After you hit "Submit", the WebPageTest application will first post a message letting you know the test has been submitted. Once the test is complete, the WebPageTest app will add another message with a thumbnail of the waterfall and a link to the full WebPageTest results.
 
 <img width="669" alt="Screen Shot 2021-06-03 at 10 30 17 AM" src="https://user-images.githubusercontent.com/66536/120671728-498b5900-c457-11eb-93f7-a04e7632c81d.png">
+
+5. To update the Webpagetest API key use `/update [API key]` slash command.
 
 ## Optional: Use ngrok to make the server publicly accessible
 By default, the Node server runs on port 5000 on localhost. You can use ngrok to make the server accessible to the Slack servers if your Node server is not already publicly accessible.

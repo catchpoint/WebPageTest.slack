@@ -188,6 +188,6 @@ app.view("SUBMIT_TEST", async ({ ack, payload, client }) => {
   await app.start(process.env.PORT || 3000);
 
   if (process.env.ENVIRONMENT === "DEVELOPMENT") {
-    console.log("⚡️ Bolt app is running!");
+    console.log("⚡️ Webpagetest Slack app is running!");
   }
 })();
