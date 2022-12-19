@@ -20,6 +20,7 @@ let options = {
   location: "ec2-us-east-1:Chrome",
   connectivity: "4G",
   pollResults: 5,
+  lighthouse: 1,
   //timeout: 240, //Could be activated later
 };
 
@@ -182,6 +183,14 @@ app.view("SUBMIT_TEST", async ({ ack, payload, client }) => {
         blocks: slackHelpers.errorBlock(error.statusCode, error.statusText),
       });
   }
+});
+
+//Catching button actions
+app.action("button-action", async ({ body, ack, say }) => {
+  // Acknowledge the action
+  await ack();
+  // Here we can customize functionality for our buttons.
+  // Leaving it blank for now just for acknowledgement
 });
 
 (async () => {
