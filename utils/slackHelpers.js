@@ -1,5 +1,6 @@
 const connectivity = require("./connectivityOptions");
-const mobileDevices = require("./mobileDevices.js");
+const mobileDevices = require("./mobileDevices");
+const runs = require("./runsOption");
 
 const generateLocationOptions = (allLocations) => {
   let options = [];
@@ -106,6 +107,34 @@ exports.dialogView = (allLocations, url, key, channel_id) => {
         emoji: true,
       },
     },
+    {
+      type: "input",
+      block_id: "runs",
+      element: {
+        type: "static_select",
+        placeholder: {
+          type: "plain_text",
+          text: "Select an item",
+          emoji: true,
+        },
+        options: runs.runs,
+        initial_option: {
+          text: {
+            type: "plain_text",
+            text: "1",
+            emoji: true,
+          },
+          value: "1",
+        },
+        action_id: "runs",
+      },
+      label: {
+        type: "plain_text",
+        text: "Number of Tests to Run",
+        emoji: true,
+      },
+    },
+
     {
       type: "section",
       block_id: "emulateMobile",
