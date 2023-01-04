@@ -150,6 +150,7 @@ app.view("SUBMIT_TEST", async ({ ack, payload, client }) => {
       }
 
       options.location = values.location.location.selected_option.value;
+      options.runs = values.runs.runs.selected_option.value;
       options.connectivity = values.connectivity.connectivity.selected_option.value;
       options.emulateMobile = values.emulateMobile.emulateMobile.selected_option.value == "true" ? true : false;
       options.device = values.mobiledevice.mobiledevice.selected_option.value;
