@@ -42,12 +42,18 @@ exports.dialogView = (allLocations, url, key, channel_id) => {
       },
     },
     {
-      type: "section",
+      type: "input",
       block_id: "url",
-      text: {
+      label: {
         type: "plain_text",
-        text: url,
+        text: "URL (Comma delimited for Bulk Testing)",
         emoji: true,
+      },
+      element: {
+        type: "plain_text_input",
+        multiline: true,
+        action_id: "url",
+        initial_value: url,
       },
     },
     {
@@ -166,21 +172,6 @@ exports.dialogView = (allLocations, url, key, channel_id) => {
       },
     },
   ];
-  if (!url)
-    blocks[1] = {
-      type: "input",
-      block_id: "url",
-      label: {
-        type: "plain_text",
-        text: "URL",
-        emoji: true,
-      },
-      element: {
-        type: "plain_text_input",
-        multiline: true,
-        action_id: "url",
-      },
-    };
 
   if (!key)
     blocks[2] = {

@@ -65,30 +65,23 @@ const app = new App({
   },
 });
 
+function validateUrl(value) {
+  return /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/i.test(
+    value
+  );
+}
+
 // Test Modal
 app.command("/webpagetest", async ({ ack, body, client, logger }) => {
   await ack();
 
   channel_temp_id = body.channel_id;
 
-  function validateUrl(value) {
-    return /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/i.test(
-      value
-    );
-  }
-
   const wpt = new WebPageTest("www.webpagetest.org", "WPT_API_KEY"); // Your WPT API Key
   const locationsResult = await wptHelpers.getLocations(wpt, options);
   const allLocations = locationsResult.result.response.data.location;
 
   try {
-    if (!validateUrl(body.text)) {
-      return await client.chat.postMessage({
-        text: "Response from WPT",
-        channel: body.channel_id,
-        blocks: slackHelpers.errorBlock("400", "Please enter a valid URL"),
-      });
-    }
     const result = await client.views.open({
       trigger_id: body.trigger_id,
       view: slackHelpers.dialogView(allLocations, body.text, WPT_API_KEY, body.channel_id),
@@ -134,39 +127,50 @@ app.view("SUBMIT_TEST", async ({ ack, payload, client }) => {
 
   try {
     const { values } = payload.state;
-    let url;
+    let urls;
     if (values.key) WPT_API_KEY = values.key.key.value;
     const blocks = payload.blocks;
-    if (values.url) url = values.url.url.value;
+    if (values.url) urls = values.url.url.value;
     else {
       for (let i = 0; i < blocks.length; i++) {
         if (blocks[i].block_id == "url") {
-          url = blocks[i].text.text;
+          urls = blocks[i].text.text;
         }
       }
     }
 
-    options.location = values.location.location.selected_option.value;
-    options.connectivity = values.connectivity.connectivity.selected_option.value;
-    options.emulateMobile = values.emulateMobile.emulateMobile.selected_option.value == "true" ? true : false;
-    options.device = values.mobiledevice.mobiledevice.selected_option.value;
+    urls.split(",").map(async (url) => {
+      //Valid URL check
+      if (!validateUrl(url.trim())) {
+        return await client.chat.postMessage({
+          text: "Response from WPT",
+          channel: channel_temp_id,
+          blocks: slackHelpers.errorBlock("400", `${url.trim()} is not a valid URL, Please enter a valid URL`),
+        });
+      }
 
-    const wpt = new WebPageTest("www.webpagetest.org", WPT_API_KEY); // Your WPT API Key
-    const wptPromise = wptHelpers.runTest(wpt, url, options);
-    await client.chat.postMessage({
-      text: "Response from WPT",
-      channel: channel_temp_id,
-      blocks: slackHelpers.testSubmissionBlock(url),
-    });
+      options.location = values.location.location.selected_option.value;
+      options.connectivity = values.connectivity.connectivity.selected_option.value;
+      options.emulateMobile = values.emulateMobile.emulateMobile.selected_option.value == "true" ? true : false;
+      options.device = values.mobiledevice.mobiledevice.selected_option.value;
 
-    const wptResult = await wptPromise;
-    const wptResultLink = wptResult.result.data.summary;
-    const waterfallLink = wptResult.result.data.median.firstView.images.waterfall;
+      const wpt = new WebPageTest("www.webpagetest.org", WPT_API_KEY); // Your WPT API Key
+      const wptPromise = wptHelpers.runTest(wpt, url.trim(), options);
+      await client.chat.postMessage({
+        text: "Response from WPT",
+        channel: channel_temp_id,
+        blocks: slackHelpers.testSubmissionBlock(url.trim()),
+      });
 
-    await client.chat.postMessage({
-      text: "Response from WPT",
-      channel: channel_temp_id,
-      blocks: slackHelpers.wptResponseBlock(url, wptResultLink, waterfallLink),
+      const wptResult = await wptPromise;
+      const wptResultLink = wptResult.result.data.summary;
+      const waterfallLink = wptResult.result.data.median.firstView.images.waterfall;
+
+      await client.chat.postMessage({
+        text: "Response from WPT",
+        channel: channel_temp_id,
+        blocks: slackHelpers.wptResponseBlock(url.trim(), wptResultLink, waterfallLink),
+      });
     });
   } catch (error) {
     console.log(error);
