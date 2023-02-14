@@ -63,6 +63,16 @@ const app = new App({
       console.log("This part is not handeled yet");
     },
   },
+  customRoutes: [
+    {
+      path: "/",
+      method: ["GET"],
+      handler: (req, res) => {
+        res.writeHead(200);
+        res.end("WPT Slack server is running!!");
+      },
+    },
+  ],
 });
 
 function validateUrl(value) {
