@@ -211,5 +211,5 @@ app.action("button-action", async ({ body, ack, say }) => {
 (async () => {
   await app.start(process.env.PORT || 3000);
 
-  console.log("⚡️ Webpagetest Slack app is running @ Port: " + process.env.PORT);
+  console.log("⚡️ Webpagetest Slack app is running @ Port: " + process.env.PORT + " " + process.env.ENVIRONMENT);
 })();
