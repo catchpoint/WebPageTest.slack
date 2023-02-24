@@ -38,7 +38,8 @@ const app = new App({
   redirectUri: `${process.env.HOST_URI}/slack/oauth_redirect`,
   scopes: ["commands", "chat:write"],
   installerOptions: {
-    redirectUriPath: "/slack/oauth_redirect", // and here!,
+    redirectUriPath: "/slack/oauth_redirect",
+    directInstall: true,
   },
   installationStore: {
     storeInstallation: async (installation) => {
