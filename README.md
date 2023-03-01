@@ -1,7 +1,9 @@
-<p align="center"><img src="https://docs.webpagetest.org/img/wpt-navy-logo.png" alt="WebPageTest Logo" /></p>
+<!-- <p align="center"><img src="https://docs.webpagetest.org/img/wpt-navy-logo.png" alt="WebPageTest Logo" /></p> -->
+<p align="center"><img width="100%" alt="Webpagetest Slack Banner" src="assets/images/Banner-docs.jpg"></p>
 <p align="center"><a href="https://docs.webpagetest.org/api/integrations/#officially-supported-integrations">Learn about more WebPageTest API Integrations in our docs</a></p>
 
 # WebPageTest Slack Bot
+
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](/LICENSE)
 
 The WebPageTest Slack bot lets you run tests against WebPageTest from within Slack. Once the tests are complete, a copy of the waterfall and a link to the full results will be posted in your Slack channel, helping you to easily troubleshoot and diagnose performance issues directly from your Slack development channels.
@@ -25,9 +27,11 @@ The WebPageTest Slack bot lets you run tests against WebPageTest from within Sla
 
 ![Screen Shot 2021-06-02 at 1 58 19 PM](https://user-images.githubusercontent.com/66536/120537313-c14f7a00-c3aa-11eb-8c50-d51562b59091.png)
 
-4. After you've set the Bot Token scope, click "Install to Workspace". The application will be installed and you'll be provided with an oAuth Token for the bot. Copy this somewhere safe as you'll need it when you setup the Node server.
+4. After you've set the Bot Token scope, click "Install to Workspace". The application will be installed and you'll be provided with an oAuth Token for the bot. Rename .env.example to .env in the root directory, Copy this token and paste it under .env file SLACK_BOT_TOKEN = "YOUR_SLACK_TOKEN".
 
 ![token-blurred](https://user-images.githubusercontent.com/66536/120537513-ffe53480-c3aa-11eb-807a-f507ff750acb.png)
+
+5. You will also be needing the SLACK_SIGNING_SECRET. On the left Sidebar Go to `Basic information` and under App Credentials copy the Signing Secret and paste it under .env file SLACK_SIGNING_SECRET.
 
 ### 2. Setting up the Node Server
 The logic that submits tests to WebPageTest and returns the results back to Slack is handled by a Node server that you'll need to have running somewhere that Slack can access. Here's how to get that running.
@@ -37,44 +41,48 @@ The logic that submits tests to WebPageTest and returns the results back to Slac
 npm install
 ```
 
-2. Update `.env` with [an WebPageTest API Key](https://app.webpagetest.org/ui/entry/wpt/signup?enableSub=true&utm_source=docs&utm_medium=github&utm_campaign=slackbot&utm_content=account) and the Slack token you copied earlier.
-
-3. Run `npm start` to start the server.
+2. Run `npm start` to start the server.
 
 ```bash
 npm start
 ```
 
-If you get response like "Express server running on port 5000", server has been successfully setup. If your node server is publicly accessible, you're good to move on with the final configuration of the Slack bot. If it's not, [you can use ngrok to make the server accessible](#optional-use-ngrok-to-make-the-server-publicly-accessible).
+If you get response like "⚡️ Webpagetest Slack app is running!", server has been successfully setup. If your node server is publicly accessible, you're good to move on with the final configuration of the Slack bot. If it's not, [you can use ngrok to make the server accessible](#optional-use-ngrok-to-make-the-server-publicly-accessible).
 
 ### 3. Final configuration of Slack Bot
-The Node server provides two API endpoints used to handle requests.
+The Node server provides an API endpoint used to handle requests.
 
-- The "/api/slack/webpagetest" path will be used for slash commands in Slack to trigger tests.
-- The "/api/slack/interactions" path will be used to process the response from WebPageTest and post the results back to Slack.
+- The "/slack/events" path will be used for slash commands in Slack to trigger tests and for all the interactions.
 
 The final step is to use set the Slack bot to use these URL's. 
 
 1. Navigate to the "Slash Commands" page for your application (found in the sidebar of the Slack navigation) and "Create a New Command" with the following settings:
 
 - **Command:** /webpagetest
-- **Request URL:** The full URL for the "/api/slack/webpagetest" endpoint of your server.
+- **Request URL:** The full URL for the "/slack/events" endpoint of your server.
 - **Short Description:** Runs WebPageTest
 - **Usage Hint:** [url to test]
 
-![Screen Shot 2021-06-02 at 2 56 20 PM](https://user-images.githubusercontent.com/66536/120544133-b39df280-c3b2-11eb-8646-3bbd74f9101f.png)
+![Screen Shot 2021-06-02 at 2 56 20 PM](/assets/images/Readme/webpagetest-command.png)
 
-2. Navigate to the "Interactivity & Shortcuts" page for your application (found in the sidebar of the Slack navigation), enable Interactivity, and then provide the full URL to the "/api/slack/interactions" endpoint for your server.
+2. Add one more command with the following settings:
 
-![Screen Shot 2021-06-02 at 4 09 03 PM](https://user-images.githubusercontent.com/66536/120552522-f82e8b80-c3bc-11eb-90d0-6b3b3721044d.png)
+- **Command:** /update
+- **Request URL:** The full URL for the "/slack/events" endpoint of your server.
+- **Short Description:** To update webpagetest api key
+- **Usage Hint:** [API KEY]
+
+3. Navigate to the "Interactivity & Shortcuts" page for your application (found in the sidebar of the Slack navigation), enable Interactivity, and then provide the full URL to the "/slack/events" endpoint for your server.
+
+![Screen Shot 2021-06-02 at 4 09 03 PM](/assets/images/Readme/interactivity.png)
 
 _Once you have added the slash command and interactivity URL, you might be asked to reinstall your app, please do it to apply the necessary changes for your app._
 
-5. Finally, in Slack, you'll need to add WebPageTest to the channel you want to be able to run tests from. You can do this by starting to type "add apps", selecting "Add apps to this channel", then clicking "Install" next to the WebPageTest application.
+4. Finally, in Slack, you'll need to add WebPageTest to the channel you want to be able to run tests from. You can do this by starting to type "add apps", selecting "Add apps to this channel", then clicking "Install" next to the WebPageTest application.
 
 <img width="668" alt="Screen Shot 2021-06-03 at 10 33 02 AM" src="https://user-images.githubusercontent.com/66536/120671600-29f43080-c457-11eb-966a-01f575ef2aa5.png">
 
-6. **Optional** You can also set a custom app icon for the app by navigating to the "Basic Information" page for your application (found in the sidebar of the Slack navigation) and adding the icon under "Display Information". We've provided [an icon for you in the repository that you can use](https://github.com/WebPageTest/webpagetest-slack/blob/master/webpagetest.png).
+5. **Optional** You can also set a custom app icon for the app by navigating to the "Basic Information" page for your application (found in the sidebar of the Slack navigation) and adding the icon under "Display Information". We've provided [an icon for you in the repository that you can use](https://github.com/WebPageTest/webpagetest-slack/blob/master/webpagetest.png).
 
 ![Screen Shot 2021-06-03 at 10 29 07 AM](https://user-images.githubusercontent.com/66536/120671651-36788900-c457-11eb-8e65-9c758fde991a.png)
 
@@ -89,7 +97,7 @@ With the server running and the Slack application configured, you're ready to st
 
 `/webpagetest https://webpagetest.org`
 
-3. A modal box will be displayed letting you customize the test by selecting a WebPageTest testing location and browser, a connectivity profile, and (optionally) mobile emulation.
+3. A modal box will be displayed letting you customize the test by selecting a WebPageTest testing location and browser, a connectivity profile, and (optionally) mobile emulation. And an additional API key field for first time users.
 
 <img width="517" alt="Screen Shot 2021-06-03 at 10 32 16 AM" src="https://user-images.githubusercontent.com/66536/120671798-59a33880-c457-11eb-944a-2d105e052dc0.png">
 
@@ -97,6 +105,8 @@ With the server running and the Slack application configured, you're ready to st
 4. After you hit "Submit", the WebPageTest application will first post a message letting you know the test has been submitted. Once the test is complete, the WebPageTest app will add another message with a thumbnail of the waterfall and a link to the full WebPageTest results.
 
 <img width="669" alt="Screen Shot 2021-06-03 at 10 30 17 AM" src="https://user-images.githubusercontent.com/66536/120671728-498b5900-c457-11eb-93f7-a04e7632c81d.png">
+
+5. To update the Webpagetest API key use `/update [API key]` slash command.
 
 ## Optional: Use ngrok to make the server publicly accessible
 By default, the Node server runs on port 5000 on localhost. You can use ngrok to make the server accessible to the Slack servers if your Node server is not already publicly accessible.
